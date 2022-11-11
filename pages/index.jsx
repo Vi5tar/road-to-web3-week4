@@ -19,8 +19,6 @@ const Home = () => {
       response = await api.getCollectionNfts(collectionAddress, true);
     }
 
-    console.log(response);
-
     if (response) {
       setNfts(response.getNfts());
     } else {
