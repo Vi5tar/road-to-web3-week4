@@ -8,6 +8,7 @@ const Home = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [collectionAddress, setCollectionAddress] = useState('');
   const [nfts, setNfts] = useState([]);
+  const [nextPageUrl, setNextPageUrl] = useState('');
 
   const fetchNfts = async () => {
     let response;
@@ -21,8 +22,18 @@ const Home = () => {
 
     if (response) {
       setNfts(response.getNfts());
+      setNextPageUrl(response.getNextPageUrl());
     } else {
       setNfts([]);
+      setNextPageUrl('');
+    }
+  };
+
+  const fetchMoreNfts = async () => {
+    if (nextPageUrl) {
+      const response = await api.getNextPage(nextPageUrl);
+      setNfts([...nfts, ...response.getNfts()]);
+      setNextPageUrl(response.getNextPageUrl());
     }
   };
 
@@ -42,6 +53,11 @@ const Home = () => {
           return <NFTCard key={index} nft={nft} />
         }) : ''}
       </div>
+      {nextPageUrl ? <button className={"disabled:bg-slate-500 text-white bg-blue-400 px-4 py-2 mt-3 rounded-sm w-1/5"} onClick={
+        () => {
+          fetchMoreNfts();
+        }
+      }>Load More</button> : ''}
     </div>
   )
 }
